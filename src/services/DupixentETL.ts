@@ -24,6 +24,22 @@ export class DupixentETL {
       throw new Error('No data loaded. Call extract() first.');
     }
 
+    const checkString = (field: string, value: any) => {
+      if (typeof value !== 'string') {
+        console.error(`Error: ${field} is not a string`);
+        return 'Unknown';
+      }
+      return value;
+    }
+
+    const checkArrayString = (field: string, value: any) => {
+      if (!Array.isArray(value)) {
+        console.error(`Error: ${field} is not an array of strings`);
+        return ['Unknown'];
+      }
+      return value.every(item => typeof item === 'string') ? value : ['Unknown'];
+    }
+
     const currencyFormatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -41,9 +57,9 @@ export class DupixentETL {
     // 3. The minimum out of pocket is 0 if there is no income requirement
     return {
       programInfo: {
-        program_name: this.data.ProgramName,
-        coverage_eligibilities: this.data.CoverageEligibilities,
-        program_type: this.data.AssistanceType,
+        program_name: checkString('Program Name', this.data.ProgramName),
+        coverage_eligibilities: checkArrayString('Coverage Eligibilities', this.data.CoverageEligibilities),
+        program_type: checkString('Program Type', this.data.AssistanceType),
         benefits: [{
           name: 'max_annual_savings',
           value: currencyFormatter.format(annualMax - maximumBenefit)

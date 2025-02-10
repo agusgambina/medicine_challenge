@@ -25,6 +25,22 @@ describe('DupixentETL', () => {
       expect(transformed.programInfo.program_name).toBe('Test Program');
     });
 
+    it('should extract data from JSON file - program_name not a string', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      const mockData = {
+        ProgramName: 123
+      };
+
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockData));
+
+      await etl.extract('test.json');
+      const transformed = etl.transform();
+
+      expect(transformed.programInfo.program_name).toBe('Unknown');
+      expect(consoleSpy).toHaveBeenCalledWith('Error: Program Name is not a string');
+      consoleSpy.mockRestore();
+    });
+
     it('should extract data from JSON file - coverage_eligibilities', async () => {
       const mockData = {
         CoverageEligibilities: ['Test Coverage Eligibility']
@@ -36,6 +52,24 @@ describe('DupixentETL', () => {
       const transformed = etl.transform();
 
       expect(transformed.programInfo.coverage_eligibilities).toEqual(['Test Coverage Eligibility']);
+    });
+
+    it('should extract data from JSON file - coverage_eligibilities not an array', async () => {
+      const consoleSpy = jest.spyOn(console, 'error');
+      const mockData = {
+        ProgramName: 'Test Program',
+        CoverageEligibilities: 'Test Coverage Eligibility',
+        AssistanceType: 'Test Program Type'
+      };
+
+      (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockData));
+
+      await etl.extract('test.json');
+      const transformed = etl.transform();
+
+      expect(transformed.programInfo.coverage_eligibilities).toEqual(['Unknown']);
+      expect(consoleSpy).toHaveBeenCalledWith('Error: Coverage Eligibilities is not an array of strings');
+      consoleSpy.mockRestore();
     });
 
     it('should extract data from JSON file - program_type', async () => {
