@@ -1,11 +1,14 @@
+# Medicine Challenge
+
+## Prequisites
+
+- Docker / Docker Compose
+- NodeJS
+- Yarn
+
 ## Docker Ollama
 
 This project uses Docker Compose to run Ollama with the Mistral model.
-
-### Prerequisites
-
-- Docker
-- Docker Compose
 
 ### Getting Started
 
