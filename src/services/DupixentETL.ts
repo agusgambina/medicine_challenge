@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { DupixentData } from '../types/dupixent';
 import { IAIService, OutputDetailsSchema } from '../interfaces/IAIService';
-import { OpenAIService } from './OpenAIService';
+import { ProgramTransformOutput } from '../types/dupixent';
 
 export class DupixentETL {
   private data: DupixentData | null = null;
@@ -28,7 +28,7 @@ export class DupixentETL {
   /**
    * Transform the data into useful formats
    */
-  async transform() {
+  async transform(): Promise<ProgramTransformOutput> {
     if (!this.data) {
       throw new Error('No data loaded. Call extract() first.');
     }
@@ -68,6 +68,20 @@ export class DupixentETL {
       program: this.data.ProgramDetails,
       renewal: this.data.AddRenewalDetails,
       income: this.data.IncomeReq ? this.data.IncomeDetails : 'Not required'
+    };
+
+    const checkFundingEvergreen = (fundLevelType: string | null): boolean => {
+      if (!fundLevelType || fundLevelType.toLowerCase().includes('evergreen')) {
+        return true;
+      }
+      return false;
+    };
+
+    const checkCurrentFundingLevelType = (fundLevelType: string | null): string => {
+      if (fundLevelType) {
+        return fundLevelType;
+      }
+      return 'Data Not Available';
     };
 
     // Assumptions
@@ -117,10 +131,9 @@ export class DupixentETL {
             url: this.data.EnrollmentURL
           }
         ],
-        // TODO: check if funding is correct, or where to get it
         funding: {
-          evergreen: 'true',
-          current_funding_level: 'Data Not Available'
+          evergreen: String(checkFundingEvergreen(this.data.FundLevelType)),
+          current_funding_level: checkCurrentFundingLevelType(this.data.FundLevelType)
         }
       }
     };

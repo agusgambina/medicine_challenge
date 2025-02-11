@@ -15,7 +15,11 @@ describe('DupixentETL', () => {
         .fn()
         .mockResolvedValue(
           'Patient must have commercial insurance, not valid for those with Medicaid, Medicare, VA, DOD, TRICARE, or other federal/state programs, or cash-paying patients. Must be prescribed for an FDA-approved indication and be a legal resident of the US or its territories. Certain state residents may be ineligible.'
-        )
+        ),
+      getRequirementsUSResidency: jest.fn().mockResolvedValue(true),
+      getRequirementsMinimumAge: jest.fn().mockResolvedValue(18),
+      getRequirementsInsuranceCoverage: jest.fn().mockResolvedValue(true),
+      getRequirementsElegibilityLength: jest.fn().mockResolvedValue(12)
     } as unknown as jest.Mocked<IAIService>;
     etl = new DupixentETL(mockAIService);
     mockData = {
@@ -148,13 +152,15 @@ describe('DupixentETL', () => {
       expect(transformed.programInfo.details).toEqual({
         eligibility:
           'Patient must have commercial insurance, not valid for those with Medicaid, Medicare, VA, DOD, TRICARE, or other federal/state programs, or cash-paying patients. Must be prescribed for an FDA-approved indication and be a legal resident of the US or its territories. Certain state residents may be ineligible.',
-        program: '-  Eligible patients may pay as little as $0 for every month of Dupixent\n-  The maximum annual patient benefit under the Dupixent MyWay Copay Card Program is $13,000\n-  Patient will receive copay card information via email following online enrollment & eligibility questions\n-  Ongoing follow-up and education are provided by the Nurse Educator to help patients stay on track with DUPIXENT\n-  Patient will be automatically re-enrolled every January 1st provided that their card has been used within 18 months\n-  For assistance or additional information, call 844-387-4936, option 1, Monday-Friday, 8 am-9 pm ET\n-  Pharmacists: for questions, call the LoyaltyScript program at 855-520-3765 (8am-8pm EST, Monday-Friday)',
-        renewal: 'Patient will be automatically re-enrolled every January 1st provided that their card has been used within 18 months',
+        program:
+          '-  Eligible patients may pay as little as $0 for every month of Dupixent\n-  The maximum annual patient benefit under the Dupixent MyWay Copay Card Program is $13,000\n-  Patient will receive copay card information via email following online enrollment & eligibility questions\n-  Ongoing follow-up and education are provided by the Nurse Educator to help patients stay on track with DUPIXENT\n-  Patient will be automatically re-enrolled every January 1st provided that their card has been used within 18 months\n-  For assistance or additional information, call 844-387-4936, option 1, Monday-Friday, 8 am-9 pm ET\n-  Pharmacists: for questions, call the LoyaltyScript program at 855-520-3765 (8am-8pm EST, Monday-Friday)',
+        renewal:
+          'Patient will be automatically re-enrolled every January 1st provided that their card has been used within 18 months',
         income: 'Not required'
       });
     });
 
-    it.only('should extract data from JSON file - requirements', async () => {
+    it('should extract data from JSON file - requirements', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockData));
 
       await etl.extract('test.json');
@@ -193,7 +199,6 @@ describe('DupixentETL', () => {
         }
       ]);
     });
-
 
     it('should throw error on file read failure', async () => {
       (fs.readFile as jest.Mock).mockRejectedValue(new Error('File not found'));
