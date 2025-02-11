@@ -84,10 +84,6 @@ export class ProgramETL {
       return 'Data Not Available';
     };
 
-    // Assumptions
-    // 1. The minimum out of pocket is 0
-    // 2. The maximum annual savings is the difference between the annual max and the maximum benefit
-    // 3. The minimum out of pocket is 0 if there is no income requirement
     return {
       program_id: checkString('Program ID', String(this.data.ProgramID)),
       program_name: checkString('Program Name', this.data.ProgramName),
@@ -96,6 +92,10 @@ export class ProgramETL {
         this.data.CoverageEligibilities
       ),
       program_type: checkString('Program Type', this.data.AssistanceType),
+      // Assumptions for benefits
+      // 1. The minimum out of pocket is 0
+      // 2. The maximum annual savings is the difference between the annual max and the maximum benefit
+      // 3. The minimum out of pocket is 0 if there is no income requirement
       benefits: [
         {
           name: 'max_annual_savings',
