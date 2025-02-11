@@ -5,6 +5,7 @@ import { ProgramETL } from './services/ProgramETL';
 import { OpenAIService } from './services/OpenAIService';
 import { OllamaAIService } from './services/OllamaAIService';
 import routes from './routes';
+import cache from 'memory-cache';
 
 // Configure dotenv at the start
 dotenv.config();
@@ -12,9 +13,32 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+// Cache middleware
+const cacheMiddleware = (duration: number) => {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const key = '__express__' + req.originalUrl || req.url;
+    const cachedBody = cache.get(key);
+
+    if (cachedBody) {
+      res.send(cachedBody);
+      return;
+    } else {
+      const originalSend = res.send;
+      res.send = function(body: any): express.Response {
+        cache.put(key, body, duration * 1000);
+        return originalSend.call(this, body);
+      };
+      next();
+    }
+  };
+};
+
 app.use(express.json());
 
-// Use routes
+// Apply cache middleware to all routes (optional)
+// app.use(cacheMiddleware(300)); // Cache for 5 minutes
+
+// Or apply to specific routes in your routes file
 app.use('/', routes);
 
 app.listen(port, () => {
