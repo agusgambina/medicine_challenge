@@ -1,8 +1,17 @@
 import fs from 'fs/promises';
 import { DupixentData } from '../types/dupixent';
+import { IAIService, OutputDetailsSchema } from '../interfaces/IAIService';
+import { OpenAIService } from './OpenAIService';
 
 export class DupixentETL {
   private data: DupixentData | null = null;
+
+  constructor(private aiService: IAIService) {
+    if (!aiService) {
+      throw new Error('AI service is required');
+    }
+    this.aiService = aiService;
+  }
 
   /**
    * Extract data from the JSON file
@@ -19,7 +28,7 @@ export class DupixentETL {
   /**
    * Transform the data into useful formats
    */
-  transform() {
+  async transform() {
     if (!this.data) {
       throw new Error('No data loaded. Call extract() first.');
     }
@@ -30,15 +39,15 @@ export class DupixentETL {
         return 'Unknown';
       }
       return value;
-    }
+    };
 
     const checkArrayString = (field: string, value: any) => {
       if (!Array.isArray(value)) {
         console.error(`Error: ${field} is not an array of strings`);
         return ['Unknown'];
       }
-      return value.every(item => typeof item === 'string') ? value : ['Unknown'];
-    }
+      return value.every((item) => typeof item === 'string') ? value : ['Unknown'];
+    };
 
     const currencyFormatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -51,28 +60,69 @@ export class DupixentETL {
     const annualMax = Number(String(this.data.AnnualMax || 0).replace(/[^0-9.-]+/g, ''));
     const maximumBenefit = Number(String(this.data.MaximumBenefit || 0).replace(/[^0-9.-]+/g, ''));
 
-    // Asumptions
+    // Get details from AI service
+    const details: OutputDetailsSchema = {
+      eligibility: await this.aiService.getEligibilityDetails(
+        String(this.data.EligibilityDetails || '')
+      ),
+      program: this.data.ProgramDetails,
+      renewal: this.data.AddRenewalDetails,
+      income: this.data.IncomeReq ? this.data.IncomeDetails : 'Not required'
+    };
+
+    // Assumptions
     // 1. The minimum out of pocket is 0
     // 2. The maximum annual savings is the difference between the annual max and the maximum benefit
     // 3. The minimum out of pocket is 0 if there is no income requirement
     return {
       programInfo: {
         program_name: checkString('Program Name', this.data.ProgramName),
-        coverage_eligibilities: checkArrayString('Coverage Eligibilities', this.data.CoverageEligibilities),
+        coverage_eligibilities: checkArrayString(
+          'Coverage Eligibilities',
+          this.data.CoverageEligibilities
+        ),
         program_type: checkString('Program Type', this.data.AssistanceType),
-        benefits: [{
-          name: 'max_annual_savings',
-          value: currencyFormatter.format(annualMax - maximumBenefit)
-        }, {
-          name: 'min_out_of_pocket',
-          value: !this.data.IncomeReq ? '0.00' : currencyFormatter.format(0) // TODO: add logic to calculate min out of pocket
-        }],
-        details: [{
-          eligibility: '',
-          program: '',
-          renewal: '',
-          income: ''
-        }]
+        benefits: [
+          {
+            name: 'max_annual_savings',
+            value: currencyFormatter.format(annualMax - maximumBenefit)
+          },
+          {
+            name: 'min_out_of_pocket',
+            value: !this.data.IncomeReq ? '0.00' : currencyFormatter.format(0)
+          }
+        ],
+        details,
+        // TODO: check if requirements is correct, or where to get it
+        requirements: [
+          {
+            name: 'us_residency',
+            value: 'true'
+          },
+          {
+            name: 'minimum_age',
+            value: '18'
+          },
+          {
+            name: 'insurance_coverage',
+            value: 'true'
+          },
+          {
+            name: 'eligibility_length',
+            value: '12m'
+          }
+        ],
+        forms: [
+          {
+            name: 'Enrollment Form',
+            url: this.data.EnrollmentURL
+          }
+        ],
+        // TODO: check if funding is correct, or where to get it
+        funding: {
+          evergreen: 'true',
+          current_funding_level: 'Data Not Available'
+        }
       }
     };
   }
@@ -82,13 +132,9 @@ export class DupixentETL {
    */
   async load(outputPath: string, data: any): Promise<void> {
     try {
-      await fs.writeFile(
-        outputPath,
-        JSON.stringify(data, null, 2),
-        'utf-8'
-      );
+      await fs.writeFile(outputPath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
       throw new Error(`Failed to load data: ${error}`);
     }
   }
-} 
+}

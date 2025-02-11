@@ -9,6 +9,11 @@ export interface NameLinkPair {
 }
 
 export interface DupixentData {
+  EnrollmentURL: any;
+  AddRenewalDetails: string;
+  IncomeDetails: string;
+  ProgramDetails: any;
+  EligibilityDetails(EligibilityDetails: any): unknown;
   ProgramName: string;
   CoverageEligibilities: string[];
   AssistanceType: string;
