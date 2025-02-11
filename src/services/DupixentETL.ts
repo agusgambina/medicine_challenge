@@ -89,52 +89,67 @@ export class DupixentETL {
     // 2. The maximum annual savings is the difference between the annual max and the maximum benefit
     // 3. The minimum out of pocket is 0 if there is no income requirement
     return {
-      programInfo: {
-        program_name: checkString('Program Name', this.data.ProgramName),
-        coverage_eligibilities: checkArrayString(
-          'Coverage Eligibilities',
-          this.data.CoverageEligibilities
-        ),
-        program_type: checkString('Program Type', this.data.AssistanceType),
-        benefits: [
-          {
-            name: 'max_annual_savings',
-            value: currencyFormatter.format(annualMax - maximumBenefit)
-          },
-          {
-            name: 'min_out_of_pocket',
-            value: !this.data.IncomeReq ? '0.00' : currencyFormatter.format(0)
-          }
-        ],
-        details,
-        requirements: [
-          {
-            name: 'us_residency',
-            value: String(await this.aiService.getRequirementsUSResidency(String(this.data.EligibilityDetails || '')))
-          },
-          {
-            name: 'minimum_age',
-            value: String(await this.aiService.getRequirementsMinimumAge(String(this.data.EligibilityDetails || '')))
-          },
-          {
-            name: 'insurance_coverage',
-            value: String(await this.aiService.getRequirementsInsuranceCoverage(String(this.data.EligibilityDetails || '')))
-          },
-          {
-            name: 'eligibility_length',
-            value: `${String(await this.aiService.getRequirementsElegibilityLength(String(this.data.EligibilityDetails || '')))}m`
-          }
-        ],
-        forms: [
-          {
-            name: 'Enrollment Form',
-            url: this.data.EnrollmentURL
-          }
-        ],
-        funding: {
-          evergreen: String(checkFundingEvergreen(this.data.FundLevelType)),
-          current_funding_level: checkCurrentFundingLevelType(this.data.FundLevelType)
+      program_id: checkString('Program ID', String(this.data.ProgramID)),
+      program_name: checkString('Program Name', this.data.ProgramName),
+      coverage_eligibilities: checkArrayString(
+        'Coverage Eligibilities',
+        this.data.CoverageEligibilities
+      ),
+      program_type: checkString('Program Type', this.data.AssistanceType),
+      benefits: [
+        {
+          name: 'max_annual_savings',
+          value: currencyFormatter.format(annualMax - maximumBenefit)
+        },
+        {
+          name: 'min_out_of_pocket',
+          value: !this.data.IncomeReq ? '0.00' : currencyFormatter.format(0)
         }
+      ],
+      details,
+      requirements: [
+        {
+          name: 'us_residency',
+          value: String(
+            await this.aiService.getRequirementsUSResidency(
+              String(this.data.EligibilityDetails || '')
+            )
+          )
+        },
+        {
+          name: 'minimum_age',
+          value: String(
+            await this.aiService.getRequirementsMinimumAge(
+              String(this.data.EligibilityDetails || '')
+            )
+          )
+        },
+        {
+          name: 'insurance_coverage',
+          value: String(
+            await this.aiService.getRequirementsInsuranceCoverage(
+              String(this.data.EligibilityDetails || '')
+            )
+          )
+        },
+        {
+          name: 'eligibility_length',
+          value: `${String(
+            await this.aiService.getRequirementsElegibilityLength(
+              String(this.data.EligibilityDetails || '')
+            )
+          )}m`
+        }
+      ],
+      forms: [
+        {
+          name: 'Enrollment Form',
+          url: this.data.EnrollmentURL
+        }
+      ],
+      funding: {
+        evergreen: String(checkFundingEvergreen(this.data.FundLevelType)),
+        current_funding_level: checkCurrentFundingLevelType(this.data.FundLevelType)
       }
     };
   }

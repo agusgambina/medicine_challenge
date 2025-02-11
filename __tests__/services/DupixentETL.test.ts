@@ -51,7 +51,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.program_name).toBe('Test Program');
+      expect(transformed.program_name).toBe('Test Program');
     });
 
     it('should extract data from JSON file - program_name not a string', async () => {
@@ -66,7 +66,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.program_name).toBe('Unknown');
+      expect(transformed.program_name).toBe('Unknown');
       expect(consoleSpy).toHaveBeenCalledWith('Error: Program Name is not a string');
       consoleSpy.mockRestore();
     });
@@ -77,7 +77,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.coverage_eligibilities).toEqual(['Test Coverage Eligibility']);
+      expect(transformed.coverage_eligibilities).toEqual(['Test Coverage Eligibility']);
     });
 
     it('should extract data from JSON file - coverage_eligibilities not an array', async () => {
@@ -92,7 +92,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.coverage_eligibilities).toEqual(['Unknown']);
+      expect(transformed.coverage_eligibilities).toEqual(['Unknown']);
       expect(consoleSpy).toHaveBeenCalledWith(
         'Error: Coverage Eligibilities is not an array of strings'
       );
@@ -105,7 +105,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.program_type).toBe('Test Program Type');
+      expect(transformed.program_type).toBe('Test Program Type');
     });
 
     it('should extract data from JSON file - program_type not string', async () => {
@@ -120,7 +120,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.program_type).toBe('Unknown');
+      expect(transformed.program_type).toBe('Unknown');
       expect(consoleSpy).toHaveBeenCalledWith('Error: Program Type is not a string');
       consoleSpy.mockRestore();
     });
@@ -131,7 +131,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.benefits).toEqual([
+      expect(transformed.benefits).toEqual([
         {
           name: 'max_annual_savings',
           value: '$13,000.00'
@@ -149,7 +149,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.details).toEqual({
+      expect(transformed.details).toEqual({
         eligibility:
           'Patient must have commercial insurance, not valid for those with Medicaid, Medicare, VA, DOD, TRICARE, or other federal/state programs, or cash-paying patients. Must be prescribed for an FDA-approved indication and be a legal resident of the US or its territories. Certain state residents may be ineligible.',
         program:
@@ -166,7 +166,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.requirements).toEqual([
+      expect(transformed.requirements).toEqual([
         {
           name: 'us_residency',
           value: 'true'
@@ -192,7 +192,7 @@ describe('DupixentETL', () => {
       await etl.extract('test.json');
       const transformed = await etl.transform();
 
-      expect(transformed.programInfo.forms).toEqual([
+      expect(transformed.forms).toEqual([
         {
           name: 'Enrollment Form',
           url: 'https://www.dupixent.com/support-savings/copay-card'

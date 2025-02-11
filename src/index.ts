@@ -1,9 +1,10 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
 import { DupixentETL } from './services/DupixentETL';
 import { OpenAIService } from './services/OpenAIService';
 import { OllamaAIService } from './services/OllamaAIService';
+import routes from './routes';
 
 // Configure dotenv at the start
 dotenv.config();
@@ -13,9 +14,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from Express + TypeScript!' });
-});
+// Use routes
+app.use('/', routes);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
@@ -24,7 +24,7 @@ app.listen(port, () => {
 async function main() {
   try {
     // Get AI service type from command line arguments (skip first two args from ts-node)
-    const aiService = process.argv[2]?.toLowerCase();
+    const aiService = process.argv[2]?.toLowerCase() || 'ollama';
     
     if (!aiService || !['ollama', 'openai'].includes(aiService)) {
       console.error('Usage: yarn etl <ollama|openai>');

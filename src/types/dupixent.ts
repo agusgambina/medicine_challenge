@@ -1,14 +1,5 @@
-export interface NameValuePair {
-  name: string;
-  value: string;
-}
-
-export interface NameLinkPair {
-  name: string;
-  link: string;
-}
-
 export interface DupixentData {
+  ProgramID: number;
   EnrollmentURL: any;
   AddRenewalDetails: string;
   IncomeDetails: string;
@@ -24,31 +15,30 @@ export interface DupixentData {
 }
 
 export interface ProgramTransformOutput {
-  programInfo: {
-    program_name: string;
-    coverage_eligibilities: string[];
-    program_type: string;
-    benefits: Array<{
-      name: string;
-      value: string;
-    }>;
-    details: {
-      eligibility: string;
-      program: string;
-      renewal: string;
-      income: string;
-    };
-    requirements: Array<{
-      name: 'us_residency' | 'minimum_age' | 'insurance_coverage' | 'eligibility_length';
-      value: string;
-    }>;
-    forms: Array<{
-      name: string;
-      url: string;
-    }>;
-    funding: {
-      evergreen: string;
-      current_funding_level: string;
-    };
-  }
+  program_id: string;
+  program_name: string;
+  coverage_eligibilities: string[];
+  program_type: string;
+  benefits: Array<{
+    name: string;
+    value: string;
+  }>;
+  details: {
+    eligibility: string;
+    program: string;
+    renewal: string;
+    income: string;
+  };
+  requirements: Array<{
+    name: 'us_residency' | 'minimum_age' | 'insurance_coverage' | 'eligibility_length';
+    value: string;
+  }>;
+  forms: Array<{
+    name: string;
+    url: string;
+  }>;
+  funding: {
+    evergreen: string;
+    current_funding_level: string;
+  };
 }
