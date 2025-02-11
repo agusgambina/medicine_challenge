@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getProgramById } from '../controllers/programsController';
+import { getProgramById, getAllPrograms } from '../controllers/programsController';
 
 const router = Router();
 
@@ -11,6 +11,10 @@ router.get('/', (req: Request, res: Response) => {
 // Add more routes here as needed
 router.get('/programs/:programId', async (req: Request, res: Response) => {
   await getProgramById(req, res);
+});
+
+router.get('/programs', async (req: Request, res: Response) => {
+  await getAllPrograms(req, res);
 });
 
 export default router;
