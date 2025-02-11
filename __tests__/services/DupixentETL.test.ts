@@ -154,7 +154,7 @@ describe('DupixentETL', () => {
       });
     });
 
-    it('should extract data from JSON file - requirements', async () => {
+    it.only('should extract data from JSON file - requirements', async () => {
       (fs.readFile as jest.Mock).mockResolvedValue(JSON.stringify(mockData));
 
       await etl.extract('test.json');

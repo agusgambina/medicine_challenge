@@ -8,7 +8,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
-  "name": "challenge",
+  "name": "medicine_challenge",
   "version": "1.0.0",
   "main": "index.js",
   "keywords": [],

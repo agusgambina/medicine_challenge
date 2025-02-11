@@ -93,23 +93,22 @@ export class DupixentETL {
           }
         ],
         details,
-        // TODO: check if requirements is correct, or where to get it
         requirements: [
           {
             name: 'us_residency',
-            value: 'true'
+            value: String(await this.aiService.getRequirementsUSResidency(String(this.data.EligibilityDetails || '')))
           },
           {
             name: 'minimum_age',
-            value: '18'
+            value: String(await this.aiService.getRequirementsMinimumAge(String(this.data.EligibilityDetails || '')))
           },
           {
             name: 'insurance_coverage',
-            value: 'true'
+            value: String(await this.aiService.getRequirementsInsuranceCoverage(String(this.data.EligibilityDetails || '')))
           },
           {
             name: 'eligibility_length',
-            value: '12m'
+            value: `${String(await this.aiService.getRequirementsElegibilityLength(String(this.data.EligibilityDetails || '')))}m`
           }
         ],
         forms: [

@@ -23,4 +23,32 @@ export interface IAIService {
    * @returns Promise resolving to program details
    */
   getEligibilityDetails(eligibilityDetails: string): Promise<string>;
+
+  /**
+   * Get requirements if US residency is required from AI service
+   * @param eligibilityDetails - The eligibility details to get requirements from
+   * @returns Promise resolving to true if US residency is required, false if not
+   */
+  getRequirementsUSResidency(eligibilityDetails: string): Promise<boolean>;
+
+  /**
+   * Get requirements if minimum age is required from AI service
+   * @param eligibilityDetails - The eligibility details to get requirements from
+   * @returns Promise resolving to true if minimum age is required, false if not
+   */
+  getRequirementsMinimumAge(eligibilityDetails: string): Promise<number>;
+
+  /**
+   * Get requirements if insurance is covering the program from AI service
+   * @param coverageEligibilities - The coverage eligibilities to get requirements from
+   * @returns Promise resolving to true if insurance is covering the program, false if not
+   */
+  getRequirementsInsuranceCoverage(coverageEligibilities: string): Promise<boolean>;
+
+  /**
+   * Get eligibility length is required from AI service if missing from data return 12 months as default
+   * @param eligibilityDetails - The eligibility details to get requirements from
+   * @returns Promise resolving to the eligibility length
+   */
+  getRequirementsElegibilityLength(eligibilityDetails: string): Promise<number>;
 } 
