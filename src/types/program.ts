@@ -1,4 +1,4 @@
-export interface DupixentData {
+export interface ProgramData {
   ProgramID: number;
   EnrollmentURL: any;
   AddRenewalDetails: string;

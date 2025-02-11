@@ -1,12 +1,12 @@
-import { DupixentETL } from '@/services/DupixentETL';
+import { ProgramETL } from '@/services/ProgramETL';
 import { IAIService } from '@/interfaces/IAIService';
 import fs from 'fs/promises';
 
 jest.mock('fs/promises');
 
-describe('DupixentETL', () => {
+describe('ProgramETL', () => {
   let mockData: any;
-  let etl: DupixentETL;
+  let etl: ProgramETL;
   let mockAIService: jest.Mocked<IAIService>;
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe('DupixentETL', () => {
       getRequirementsInsuranceCoverage: jest.fn().mockResolvedValue(true),
       getRequirementsElegibilityLength: jest.fn().mockResolvedValue(12)
     } as unknown as jest.Mocked<IAIService>;
-    etl = new DupixentETL(mockAIService);
+    etl = new ProgramETL(mockAIService);
     mockData = {
       ProgramName: 'Test Program',
       CoverageEligibilities: ['Test Coverage Eligibility'],

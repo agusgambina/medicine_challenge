@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
-import { DupixentETL } from './services/DupixentETL';
+import { ProgramETL } from './services/ProgramETL';
 import { OpenAIService } from './services/OpenAIService';
 import { OllamaAIService } from './services/OllamaAIService';
 import routes from './routes';
@@ -44,17 +44,17 @@ async function main() {
       aiServiceInstance = new OllamaAIService(process.env.OLLAMA_URL);
     }
 
-    const etl = new DupixentETL(aiServiceInstance);
+    const etl = new ProgramETL(aiServiceInstance);
     
     // Extract
-    await etl.extract(path.join(__dirname, '../data/dupixent.json'));
+    await etl.extract(path.join(__dirname, `../data/${process.env.PROGRAM_NAME}.json`));
     
     // Transform
     const transformedData = await etl.transform();
     
     // Load
     await etl.load(
-      path.join(__dirname, '../output/dupixent-transformed.json'),
+      path.join(__dirname, `../output_programs/${process.env.PROGRAM_NAME}-transformed.json`),
       transformedData
     );
 

@@ -1,23 +1,33 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
+import { ProgramTransformOutput } from '../types/program';
 
-interface Program {
-    id: string;
-    // Add other program properties as needed
-}
-
-const getPrograms = (): Program[] => {
-    const filePath = path.join(process.cwd(), 'output', 'dupixent-transformed.json');
-    const fileData = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileData);
+const getPrograms = (): ProgramTransformOutput[] => {
+    const directoryPath = path.join(process.cwd(), 'output_programs');
+    const files = fs.readdirSync(directoryPath);
+    const jsonFiles = files.filter(file => file.endsWith('.json'));
+    
+    const allPrograms: ProgramTransformOutput[] = [];
+    for (const file of jsonFiles) {
+        const filePath = path.join(directoryPath, file);
+        const fileData = fs.readFileSync(filePath, 'utf8');
+        const programs = JSON.parse(fileData);
+        if (Array.isArray(programs)) {
+            allPrograms.push(...programs);
+        } else {
+            allPrograms.push(programs);
+        }
+    }
+    
+    return allPrograms;
 };
 
 export const getProgramById = async (req: Request, res: Response) => {
     try {
         const programs = getPrograms();
         const programId = req.params.programId;
-        const program = programs.find((p: Program) => p.id === programId);
+        const program = programs.find((p: ProgramTransformOutput) => p.program_id === programId);
 
         if (!program) {
             return res.status(404).json({ error: 'Program not found' });

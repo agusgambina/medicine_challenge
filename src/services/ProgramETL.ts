@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
-import { DupixentData } from '../types/dupixent';
+import { ProgramData } from '../types/program';
 import { IAIService, OutputDetailsSchema } from '../interfaces/IAIService';
-import { ProgramTransformOutput } from '../types/dupixent';
+import { ProgramTransformOutput } from '../types/program';
 
-export class DupixentETL {
-  private data: DupixentData | null = null;
+export class ProgramETL {
+  private data: ProgramData | null = null;
 
   constructor(private aiService: IAIService) {
     if (!aiService) {
@@ -19,7 +19,7 @@ export class DupixentETL {
   async extract(filePath: string): Promise<void> {
     try {
       const rawData = await fs.readFile(filePath, 'utf-8');
-      this.data = JSON.parse(rawData) as DupixentData;
+      this.data = JSON.parse(rawData) as ProgramData;
     } catch (error) {
       throw new Error(`Failed to extract data: ${error}`);
     }
