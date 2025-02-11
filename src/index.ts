@@ -3,7 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { DupixentETL } from './services/DupixentETL';
 import { OpenAIService } from './services/OpenAIService';
-import { OllamaAIService } from './services/OLlamaAIService';
+import { OllamaAIService } from './services/OllamaAIService';
 
 // Configure dotenv at the start
 dotenv.config();
@@ -23,9 +23,28 @@ app.listen(port, () => {
 
 async function main() {
   try {
-    const openAIService = new OpenAIService(process.env.OPENAI_API_KEY || '');
-    const ollamaService = new OllamaAIService('http://localhost:11434');
-    const etl = new DupixentETL(ollamaService);
+    // Get AI service type from command line arguments (skip first two args from ts-node)
+    const aiService = process.argv[2]?.toLowerCase();
+    
+    if (!aiService || !['ollama', 'openai'].includes(aiService)) {
+      console.error('Usage: yarn etl <ollama|openai>');
+      process.exit(1);
+    }
+
+    let aiServiceInstance;
+    if (aiService === 'openai') {
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY environment variable is required for OpenAI service');
+      }
+      aiServiceInstance = new OpenAIService(process.env.OPENAI_API_KEY);
+    } else {
+      if (!process.env.OLLAMA_URL) {
+        throw new Error('OLLAMA_URL environment variable is required for Ollama service');
+      }
+      aiServiceInstance = new OllamaAIService(process.env.OLLAMA_URL);
+    }
+
+    const etl = new DupixentETL(aiServiceInstance);
     
     // Extract
     await etl.extract(path.join(__dirname, '../data/dupixent.json'));
