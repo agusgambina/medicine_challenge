@@ -70,12 +70,12 @@ Start the express server
 yarn dev
 ```
 
-The server will be available at `http://localhost:3000`.
+The server will be available at `http://localhost:3001`.
 
 #### API Endpoints
 
 - Get program by ID: `GET /programs/:id`
-  Example: http://localhost:3000/programs/11757
+  Example: http://localhost:3001/programs/11757
 
 #### Testing API Endpoints
 
