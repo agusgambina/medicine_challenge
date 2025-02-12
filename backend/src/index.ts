@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { ProgramETL } from './services/ProgramETL';
 import { OpenAIService } from './services/OpenAIService';
 import { OllamaAIService } from './services/OllamaAIService';
@@ -11,6 +12,13 @@ dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+
+// Configure CORS
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*', // Allow all origins by default, or specify from env
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Or apply to specific routes in your routes file
 app.use('/', routes);

@@ -215,5 +215,5 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,osx,node,dotenv
 
-ollama_data/
-output_programs/
+backend/ollama_data/
+backend/output_programs/
