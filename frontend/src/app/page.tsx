@@ -30,12 +30,13 @@ export default function Home() {
   const [programNameQuery, setProgramNameQuery] = useState('');
   const [coverageQuery, setCoverageQuery] = useState('');
   const [programTypeQuery, setProgramTypeQuery] = useState('');
+  const [detailsQuery, setDetailsQuery] = useState('');
 
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
         const response = await fetch(
-          `/api/programs?program_id=${searchQuery}&program_name=${programNameQuery}&coverage_eligibilities=${coverageQuery}&program_type=${programTypeQuery}`
+          `/api/programs?program_id=${searchQuery}&program_name=${programNameQuery}&coverage_eligibilities=${coverageQuery}&program_type=${programTypeQuery}&details=${detailsQuery}`
         );
         const data = await response.json();
         setProgramsData(data);
@@ -47,7 +48,7 @@ export default function Home() {
     };
 
     fetchPrograms();
-  }, [searchQuery, programNameQuery, coverageQuery, programTypeQuery]);
+  }, [searchQuery, programNameQuery, coverageQuery, programTypeQuery, detailsQuery]);
 
   const filteredPrograms = programsData;
 
@@ -88,6 +89,13 @@ export default function Home() {
             placeholder="Search by Program Type..."
             value={programTypeQuery}
             onChange={(e) => setProgramTypeQuery(e.target.value)}
+            className="w-full p-2 border rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-700"
+          />
+          <input
+            type="text"
+            placeholder="Search in Program Details..."
+            value={detailsQuery}
+            onChange={(e) => setDetailsQuery(e.target.value)}
             className="w-full p-2 border rounded-lg dark:bg-gray-800 dark:text-white dark:border-gray-700"
           />
         </div>

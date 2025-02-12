@@ -54,6 +54,21 @@ export const getAllPrograms = async (req: Request, res: Response) => {
                     // Skip undefined or null query values
                     if (!value) return true;
                     
+                    // Special handling for details field
+                    if (key === 'details') {
+                        const queryValue = String(value).toLowerCase();
+                        const details = program.details;
+                        
+                        // Search within all relevant detail fields
+                        return (
+                            details.eligibility?.toLowerCase().includes(queryValue) ||
+                            details.program?.toLowerCase().includes(queryValue) ||
+                            details.renewal?.toLowerCase().includes(queryValue) ||
+                            details.income?.toLowerCase().includes(queryValue) ||
+                            false
+                        );
+                    }
+                    
                     // Handle case where program property doesn't exist
                     if (!(key in program)) return false;
                     
