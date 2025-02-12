@@ -158,3 +158,7 @@ Each field is obtained in the following way
 ## Cache
 
 This repository uses the library `memory-cache` for API efficiency.
+
+## Sample API responses
+
+There are sample API responses on `backend/sample_api_responses`
