@@ -1,1 +1,2 @@
-GET http://localhost:3000/programs?program_name=Dupixent
+# Programs with query params
+GET http://localhost:3001/programs?program_name=Dupixent
