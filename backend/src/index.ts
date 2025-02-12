@@ -23,14 +23,17 @@ app.use(cors({
 // Or apply to specific routes in your routes file
 app.use('/', routes);
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+// Start server only if not running ETL command
+if (!process.argv.includes('etl')) {
+  app.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  });
+}
 
 async function main() {
   try {
     // Get AI service type from command line arguments (skip first two args from ts-node)
-    const aiService = process.argv[2]?.toLowerCase() || 'ollama';
+    const aiService = process.argv[3]?.toLowerCase() || 'ollama';
     
     if (!aiService || !['ollama', 'openai'].includes(aiService)) {
       console.error('Usage: yarn etl <ollama|openai>');
@@ -72,4 +75,7 @@ async function main() {
   }
 }
 
-main(); 
+// Only run main() if the command is 'yarn etl'
+if (process.argv.includes('etl')) {
+  main();
+} 

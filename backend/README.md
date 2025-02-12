@@ -65,7 +65,7 @@ After processing, transformed data files will be generated in the `output_progra
 
 ### API Server
 
-Start the development server (includes ETL processing):
+Start the express server
 ```bash
 yarn dev
 ```
