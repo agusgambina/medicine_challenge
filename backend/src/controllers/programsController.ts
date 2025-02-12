@@ -4,7 +4,7 @@ import path from 'path';
 import { ProgramTransformOutput } from '../types/program';
 
 const getPrograms = (): ProgramTransformOutput[] => {
-    const directoryPath = path.join(process.cwd(), 'output_programs');
+    const directoryPath = path.join(process.cwd(), 'output_data');
     const files = fs.readdirSync(directoryPath);
     const jsonFiles = files.filter(file => file.endsWith('.json'));
     

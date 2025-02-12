@@ -61,7 +61,7 @@ yarn etl ollama
 yarn etl openai
 ```
 
-After processing, transformed data files will be generated in the `output_programs` directory as `${programName}-transformed.json`.
+The process will read all the json files inside the folder `data` and the files will have their output on `output_data`
 
 ### API Server
 
@@ -98,7 +98,7 @@ yarn test
 ```
 ├── http/            # API test files
 ├── data/            # Files to be processed
-├── output_programs/ # Processed data output
+├── output_data/ # Processed data output
 ├── src/             # Source code
 ├── tests/           # Test files
 └── .env.example     # Environment variables template

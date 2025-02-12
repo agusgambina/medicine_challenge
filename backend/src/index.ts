@@ -6,6 +6,7 @@ import { ProgramETL } from './services/ProgramETL';
 import { OpenAIService } from './services/OpenAIService';
 import { OllamaAIService } from './services/OllamaAIService';
 import routes from './routes';
+import fs from 'fs/promises';
 
 // Configure dotenv at the start
 dotenv.config();
@@ -33,7 +34,7 @@ if (!process.argv.includes('etl')) {
 async function main() {
   try {
     // Get AI service type from command line arguments (skip first two args from ts-node)
-    const aiService = process.argv[3]?.toLowerCase() || 'ollama';
+    const aiService = process.argv[4]?.toLowerCase() || 'ollama';
     
     if (!aiService || !['ollama', 'openai'].includes(aiService)) {
       console.error('Usage: yarn etl <ollama|openai>');
@@ -55,27 +56,49 @@ async function main() {
 
     const etl = new ProgramETL(aiServiceInstance);
     
-    // Extract
-    await etl.extract(path.join(__dirname, `../data/${process.env.PROGRAM_NAME}.json`));
-    
-    // Transform
-    const transformedData = await etl.transform();
-    
-    // Load
-    await etl.load(
-      path.join(__dirname, `../output_programs/${process.env.PROGRAM_NAME}-transformed.json`),
-      transformedData
-    );
+    // Read all JSON files from the data directory
+    const dataDir = path.join(__dirname, '../data');
+    const files = await fs.readdir(dataDir);
+    const jsonFiles = files.filter(file => file.endsWith('.json'));
 
-    console.log('ETL process completed successfully');
-    console.log('Transformed data summary:', transformedData);
+    console.log(`Found ${jsonFiles.length} JSON files to process`);
+
+    // Process each JSON file
+    for (const file of jsonFiles) {
+      const programName = path.basename(file, '.json');
+      console.log(`Processing ${programName}...`);
+
+      try {
+        // Extract
+        await etl.extract(path.join(dataDir, file));
+        
+        // Transform
+        const transformedData = await etl.transform();
+        
+        // Load
+        await etl.load(
+          path.join(__dirname, `../output_data/${programName}-transformed.json`),
+          transformedData
+        );
+
+        console.log(`Successfully processed ${programName}`);
+      } catch (error) {
+        console.error(`Error processing ${programName}:`, error);
+        // Continue with next file even if one fails
+        continue;
+      }
+    }
+
+    console.log('ETL process completed successfully for all files');
 
   } catch (error) {
     console.error('ETL process failed:', error);
   }
 }
 
-// Only run main() if the command is 'yarn etl'
+
 if (process.argv.includes('etl')) {
+  console.log('Running ETL process...');
   main();
+  console.log('ETL process completed successfully');
 } 
